@@ -65,13 +65,49 @@ func main() {
 	var overlap int
 
 	for _, vector := range vectors {
-		fmt.Println(vector)
-		//Check either x or y coords are equal ie. straight line
+		// fmt.Println(vector)
 
 		var x, xa, xb, y, ya, yb int
 
 		if vector.x1 != vector.x2 && vector.y1 != vector.y2 {
-			continue
+			// DIAGONAL
+			if vector.x2 < vector.x1 {
+				xa = vector.x2
+				xb = vector.x1
+				ya = vector.y2
+				yb = vector.y1
+			} else {
+				xa = vector.x1
+				xb = vector.x2
+				ya = vector.y1
+				yb = vector.y2
+			}
+
+			for x := xa; x < xb+1; x++ {
+				if ya < yb {
+					y = ya + (x - xa)
+				} else {
+					y = ya - (x - xa)
+				}
+
+				_, xok := intersects[x]
+				if xok {
+					_, yok := intersects[x][y]
+					if yok {
+						if intersects[x][y] == 1 {
+							overlap++
+							intersects[x][y]++
+						} else {
+							intersects[x][y]++
+						}
+					} else {
+						intersects[x][y] = 1
+					}
+				} else {
+					intersects[x] = map[int]int{}
+					intersects[x][y] = 1
+				}
+			}
 		} else if vector.x1 == vector.x2 {
 			x = vector.x1
 			// Make sure we are incrementing from lower y to greater y
